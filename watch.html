@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>watch</title>
+    <style>
+        #list {
+            width: 600px;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        
+        #list td,
+        #list th {
+            border: 1px solid black;
+            text-align: center;
+        }
+        
+        #list>thead>th {
+            color: yellow;
+            background-color: purple;
+        }
+        
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="example" v-cloak>
+        <p>
+            이름 : <input type="text" v-model="name" v-on:keyup.enter="search" placeholder="두자 이상 입력하세요" />
+        </p>
+        <table id="list">
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>이름</th>
+                    <th>전화번호</th>
+                    <th>주소</th>
+                </tr>
+            </thead>
+            <tbody id="contacts">
+                <tr v-for="contact in contactlist">
+                    <td>{{contact.no}}</td>
+                    <td>{{contact.name}}</td>
+                    <td>{{contact.tel}}</td>
+                    <td>{{contact.address}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div v-show="isProcessing === true">조회중</div>
+    </div>
+
+    <script src="https://unpkg.com/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.4/fetch.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.1/es6-promise.auto.min.js"></script>
+
+    <script type="text/javascript">
+        let vm = new Vue({
+            el: "#example",
+            data: {
+                name: "",
+                isProcessing: false,
+                contactlist: []
+            },
+            // watch: {
+            //     name: function(val) {
+            //         if (val.length >= 2) {
+            //             this.fetchContacts();
+            //         } else {
+            //             this.contactlist = [];
+            //         }
+            //     }
+            // },
+            methods: {
+                search: function(e) {
+                    // if (e.keyCode === 13) { // 엔터키
+                    let val = e.target.value;
+                    if (val.length >= 2) {
+                        this.fetchContacts();
+                    } else {
+                        this.contactlist = []
+                    }
+                    // }
+                },
+                // 타이핑을 할 때마다 매번 API를 호출하는 것은 비효율적이므로
+                // debounce 를 사용하여 일정 시간(300ms)이 지나도록 연속적인 호출이 일어나지 않을 때 API를 요청
+                // fetchContacts: _.debounce(function() {
+                fetchContacts: function() {
+                    // v-on:keyup 이벤트를 사용함으로써 debounce()를 쓸 이유가 사라짐
+                    this.contactlist = [];
+                    this.isProcessing = true;
+                    let url = "http://sample.bmaster.kro.kr/contacts_long/search/" + this.name;
+                    let vm = this;
+                    // fetch 메소드의 리턴값은 promise 객체
+                    // fetch() 호출 후 서버로부터 응답이 오면 .then() 에 전달한 함수가 호출됨
+                    // fetch() 호출시점과 then()에 작성된 함수가 실행되는 시점이 차이나는 것
+                    fetch(url)
+                        .then(function(response) {
+                            return response.json()
+                        }).then(function(json) {
+                            vm.contactlist = json;
+                            vm.isProcessing = false;
+                        }).catch(function(ex) {
+                            console.log('parsing failed', ex)
+                            vm.contactlist = [];
+                            vm.isProcessing = false
+                        })
+                },
+                // 300)
+                // 계산형 속성의 경우 값을 직접 리턴해야 하기 때문에 동기적 처리만 수행 가능하다
+                // 비동기 처리가 필요한 경우는 관찰 속성을 사용하거나 이벤트 처리 방법을 적용해야 한다
+            }
+        })
+    </script>
+</body>
+
+</html>
