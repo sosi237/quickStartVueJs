@@ -21,14 +21,42 @@
     <script type="text/javascript">
         Vue.component("list-component", {
             template: '#listTemplate',
-            props: ["message"]
+            // props: ["myMessage"]
+            props: {
+                // 속성에 대한 엄격한 유효성 검사가 필요한 경우 객체 형태를 사용할 수 있다.
+                "message": {
+                    type: String,
+                    default: "안녕하세요"
+                },
+                "count": {
+                    type: Number,
+                    required: true
+                },
+                // 속성으로 전달할 값이 배열이나 객체인 경우 기본값을 부여하기 위해서는 함수를 사용해야 한다.
+                "countries": {
+                    type: Array,
+                    default: function() {
+                        return ['대한민국']
+                    }
+                }
+            }
         })
     </script>
     <div id="app">
         <ul>
-            <list-component message="Hello"></list-component>
-            <list-component message="안녕"></list-component>
-            <list-component message="ni hao"></list-component>
+            <!-- 태그 작성 시 특성은 대소문자를 구분하지 않으므로 태그에 속성명을 사용할 정보를 전달할 때는 케밥 표기법에 따라야 한다 -->
+            <!-- <list-component my-message="Hello"></list-component>
+            <list-component my-message="안녕"></list-component>
+            <list-component myMessage="ni hao"></list-component> -->
+
+            <!-- v-bind 를 써서 표현하지 않으면 리터럴로 전달되므로 타입을 number로 지정해도 문자열로 출력됨 -->
+            <list-component message="Hello" :count="100" :countries="['미국', '호주']"></list-component>
+            <list-component message="안녕" :count="21"></list-component>
+            <list-component message="ni hao" :countries="['대만']"></list-component>
+            <!-- required true로 지정하였어도 아예 전달하지 않으면 렌더링된다. 
+                그러나 :count='world' 처럼 작성하면 world라는 변수나 객체가 반드시 존재해야 한다.
+             -->
+            <list-component :count="1000"></list-component>
         </ul>
     </div>
 
