@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>props & events</title>
+    <script src="https://unpkg.com/vue@2.5.16/dist/vue.js"></script>
+</head>
+
+<!-- 이벤트 버스 객체 -->
+<!-- 별도의 데이터 정보를 가지지 않고 순수하게 이벤트를 통해 컴포넌트 간 정보교환을 할 때 사용 -->
+<script type="text/javascript">
+    let eventBus = new Vue();
+</script>
+<!-- 첫번째 자식 컴포넌트 시작 -->
+<template id="child1Template">
+    <div>
+        <button @click="clickEvent">child1 button</button>
+        <div>{{currentTime}}</div>
+    </div>
+</template>
+<script type="text/javascript">
+    Vue.component("child1-component", {
+        template: "#child1Template",
+        data: function() {
+            return {
+                currentTime: ""
+            }
+        },
+        methods: {
+            clickEvent: function() {
+                let d = new Date();
+                let t = d.toLocaleTimeString() + " " + d.getMilliseconds() + "ms"
+                eventBus.$emit("click1", t)
+                this.currentTime = t;
+            }
+        }
+    })
+</script>
+<!-- 첫번째 자식 컴포넌트 끝 -->
+
+<!-- 두번째 자식 컴포넌트 시작 -->
+<template id="child2Template">
+    <ul>
+        <li v-for="t in timelist">{{t}}</li>
+    </ul>
+</template>
+<script type="text/javascript">
+    Vue.component("child2-component", {
+        template: "#child2Template",
+        data: function() {
+            return {
+                timelist: []
+            }
+        },
+        //이벤트를 수신하는 컴포넌트는 미리 이벤트 핸들러를 등록해야 한다. 
+        // created 훅을 이용하여 Vue 인스턴스 생성시 $on 메소드를 통해 이벤트 수신 정보를 등록한다.
+        created: function() {
+            eventBus.$on("click1", this.child1Click)
+        },
+        methods: {
+            child1Click: function(time) {
+                this.timelist.push(time)
+            }
+        }
+    })
+</script>
+<!-- 두번째 자식 컴포넌트 끝 -->
+
+<body>
+    <div id="app">
+        <child1-component></child1-component>
+        <hr>
+        <child2-component></child2-component>
+    </div>
+
+</body>
+
+<script type="text/javascript">
+    Vue.config.devtools = true;
+    let vm = new Vue({
+        el: "#app"
+    })
+</script>
+
+</html>
