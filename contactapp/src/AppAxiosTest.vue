@@ -77,10 +77,11 @@ export default {
             // 데이터 옵션을 엑세스하기 위해서는 this 객체가 vue 인스턴스를 참조할 수 있어야 한다.
             // then() 내부에서 화살표함수를 사용하지 않으면 this 가 vue 인스턴스를 참조하지 않으므로 
             // 밖에서 별도의 변수에 this 를 할당한 후에 클로저 방식으로 접근해야 하는 불편이 있다.
+            // 반대로 methods 옵션의 각 메소드 안에서는 화살표 함수를 사용하지 않아야 함에 주의
             axios.get("/api/contacts/"+ this.no)
             .then((response) => {
                 console.log(response)
-                this.result = response.data
+                this.result = response.data // 화살표 함수를 썼으므로 this == 외부의 vue 객체
             })
         },
         updateContact: function(){
