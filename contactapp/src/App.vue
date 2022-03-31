@@ -14,8 +14,8 @@ import ContactList from './components/ContactList.vue'
 import AddContact from './components/AddContact.vue'
 import UpdateContact from './components/UpdateContact.vue'
 import UpdatePhoto from './components/UpdatePhoto.vue'
-import CONF from './components/Config.vue'
-import eventBus from './components/EventBus.vue'
+import CONF from './Config.js'
+import eventBus from './EventBus.js'
 
 export default {
   name: 'app',
@@ -71,7 +71,7 @@ export default {
       this.fetchContacts();
     },
     fetchContacts:function(){
-      this.$axios.get(CONF.contactlist, {
+      this.$axios.get(CONF.FETCH, {
         params:{
           pageno:this.contactlist.pageno, 
           pagesize:this.contactlist.pagesize, 
