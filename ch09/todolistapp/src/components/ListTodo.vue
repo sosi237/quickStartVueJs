@@ -64,20 +64,12 @@
     </ul>
 </template>
 <script>
-import eventBus from '../EventBus'
+import Constant from '../Constant'
 
 export default {
-    created:function(){
-        eventBus.$on("add-todo", this.addTodo)
-    },
-    data: function(){
-        return {
-            todolist: [
-                {id: 1,todo: "영화보기",done: false}, 
-                {id: 2,todo: "산책",done: true}, 
-                {id: 3,todo: "ES6 공부",done: false}, 
-                {id: 4,todo: "배구보기",done: false}
-            ]
+    computed:{
+        todolist(){ // 읽기 전용 계산형 속성
+            return this.$store.state.todolist
         }
     },
     methods: {
@@ -89,26 +81,12 @@ export default {
                     checked: false
                 }
             },
-            addTodo: function(todo) {
-                if (todo !== "") {
-                    this.todolist.push({
-                        id: new Date().getTime(),
-                        todo: todo,
-                        done: false
-                    })
-                }
-            },
-            doneToggle: function(id) {
-                let index = this.todolist.findIndex(function(item) {
-                    return item.id === id;
-                })
-                this.todolist[index].done = !this.todolist[index].done
+            doneToggle: function(id) { 
+                // this.$store.commit(변이의 이름, 변이에 전달할 인자) : 변이를 일으킴
+                this.$store.commit(Constant.DONE_TOGGLE, {id:id})
             },
             deleteTodo: function(id) {
-                let index = this.todolist.findIndex(function(item) {
-                    return item.id === id;
-                })
-                this.todolist.splice(index, 1)
+                this.$store.commit(Constant.DELETE_TODO, {id:id})
             }
         }
 }
