@@ -56,22 +56,22 @@
 <template>
     <ul id="todolist">
         <li v-for="a in todolist" :key="a.id" :class="checked(a.done)"
-        @click="doneToddle(a.id)">
+        @click="doneToddle({id:a.id})">
             <span>{{a.todo}}</span>
             <span v-if="a.done">(완료)</span>
-            <span class="close" @click.stop="deleteTodo(a.id)">&#x00D7;</span>
+            <span class="close" @click.stop="deleteTodo({id:a.id})">&#x00D7;</span>
         </li>
     </ul>
 </template>
 <script>
 import Constant from '../Constant'
+import {mapState} from 'vuex'
+// import {mapState, mapMutations} from 'vuex'
 
 export default {
-    computed:{
-        todolist(){ // 읽기 전용 계산형 속성
-            return this.$store.state.todolist
-        }
-    },
+    // Vuex 상태를 계산형 속성에 바인딩하는 이유
+    // : 컴포넌트 수준에서 상태를 직접 변경하지 않았으면 하므로
+    computed:mapState(['todolist']),
     methods: {
             checked: function(done) {
                 if (done) return {
@@ -81,13 +81,17 @@ export default {
                     checked: false
                 }
             },
-            doneToggle: function(id) { 
-                // this.$store.commit(변이의 이름, 변이에 전달할 인자) : 변이를 일으킴
-                this.$store.commit(Constant.DONE_TOGGLE, {id:id})
+            deleteTodo:function(payload){
+                // dispatch() : 액션을 일으키는 메소드
+                this.$this.$store.dispatch(Constant.DELETE_TODO, payload);
             },
-            deleteTodo: function(id) {
-                this.$store.commit(Constant.DELETE_TODO, {id:id})
+            doneToggle:function(payload){
+                this.$this.$store.dispatch(Constant.DONE_TOGGLE, payload);
             }
+            // ...mapMutations([
+            //     Constant.DELETE_TODO,
+            //     Constant.DONE_TOGGLE
+            // ])
         }
 }
 </script>
