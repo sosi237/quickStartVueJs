@@ -32,10 +32,14 @@ import Home from './components/Home.vue'
 import About from './components/About.vue'
 import Contacts from './components/Contacts.vue'
 import ContactByNo from './components/ContactByNo.vue'
+import NotFound from './components/NotFound.vue'
 import VueRouter from 'vue-router'  // vue-router 참조
 
 // 각 경로별로 보여줄 컴포넌트를 매핑한 router 객체 생성
 const router = new VueRouter({
+  // VueRouter 객체는 기본적으로 해시 모드로, URL에서 해시(#)기호 다음의 경로가 페이지 내부 이름으로 여겨진다.
+  // 따라서 해시 이후의 경로가 바뀌더라도 페이지가 다시 로드되지 않는다.
+  mode:"history", // 해시 제거
   //명명된 라우트 : 라우트 정보에 고유 이름을 부여 
   // URI 경로가 아닌 라우트 이름으로 내비게이션하도록 함으로써 URI 경로 변경시 유지보수 용이
   routes:[
@@ -44,15 +48,24 @@ const router = new VueRouter({
     {path:"/about", name:"about", component:About},
     {path:"/contacts", name:"contacts", component:Contacts,
       children:[
-        {path:":no", name:"contactbyno", component:ContactByNo, beforeEnter:(to, from, next)=>{
-          console.log("@@ beforeEnter: " + from.path + "--> " + to.path)
-          // /contacts 에서 /contacts/:no로의 이동만 허용하게 하기 위함
-          // http://localhost:8081/#/contacts/1004 처럼 입력하여 이동해보기
-          if(from.path.startsWith("/contacts"))   next()
-          else next("/home")
-        }},
+        // props:true 인 경우 route.params 정보를 동일한 속성에 할당한다. 
+        // 즉, URI 경로 상의 :no가 ContactByNo.vue컴포넌트의 no속성에 전달된다.
+        {path:":no", name:"contactbyno", component:ContactByNo, props:true},
     ]},
-    
+    // 아래의 방법처럼 this.$route 객체의 정보에 의존적인 ContactByNo.vue 컴포넌트는 라우팅을 사용하지 않는 애플리케이션에 적합하지 않다.
+    // 그럴 경우 위의 방법처럼 속성 정보를 활용한다.
+    // {path:"/contacts", name:"contacts", component:Contacts,
+    //   children:[
+    //     {path:":no", name:"contactbyno", component:ContactByNo, beforeEnter:(to, from, next)=>{
+    //       console.log("@@ beforeEnter: " + from.path + "--> " + to.path)
+    //       // /contacts 에서 /contacts/:no로의 이동만 허용하게 하기 위함
+    //       // http://localhost:8081/#/contacts/1004 처럼 입력하여 이동해보기
+    //       if(from.path.startsWith("/contacts"))   next()
+    //       else next("/home")
+    //     }},
+    // ]},
+    // catchAll 라우트를 사용하여 오류 메시지 컴포넌트 노출
+    {path:"*", component:NotFound}
   ]
 })
 

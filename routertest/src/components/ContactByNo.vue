@@ -31,24 +31,35 @@ import contactlist from '../ContactList'
 
 export default {
     name:'contactbyno',
+    props:["no"],   // 속성의 사용으로 더이상 라우트 정보에 의존적이지 않다.
     data:function(){
         return {
-            no:0, contacts:contactlist.contacts
+            contacts:contactlist.contacts
         }
     }, 
-    created: function(){
-        // /contacts/:no 와 같이 URI 경로의 문자열은 this.$route.params.no 와 같이 획득한다.
-        // this.$route.query 객체도 지원한다 : /users?keyword=test -> this.$route.query.keyword
-        this.no=this.$route.params.no;
-    },
-    // /contacts 에서 /contacts/:no로의 이동만 허용하게 하기 위함
-    // 라우트 정보가 변경될때만 호출된다. 처음 컴포넌트 생성시에는 호출되지 않는다.
-    // 따라서 created() 훅도 필요하다
-    beforeRouteUpdate(to, from, next){
-        console.log("** beforeRouteUpdate")
-        this.no = to.params.no
-        next()  // 반드시 호출해야. 호출하지 않으면 내비게이션이 완료되지 않아 URL 경로가 변경되지 않음
-    },
+    // 속성을 사용하지 않는 경우
+    // data:function(){
+    //     return {
+    //         no:0, contacts:contactlist.contacts
+    //     }
+    // }, 
+
+    // 속성(props의 사용으로 더이상 필요하지 않으므로 주석 처리)
+    // created: function(){
+    //     // /contacts/:no 와 같이 URI 경로의 문자열은 this.$route.params.no 와 같이 획득한다.
+    //     // this.$route.query 객체도 지원한다 : /users?keyword=test -> this.$route.query.keyword
+    //     this.no=this.$route.params.no;
+    // },
+    // // /contacts 에서 /contacts/:no로의 이동만 허용하게 하기 위함
+    // // 라우트 정보가 변경될때만 호출된다. 처음 컴포넌트 생성시에는 호출되지 않는다.
+    // // 따라서 created() 훅도 필요하다
+    // beforeRouteUpdate(to, from, next){
+    //     console.log("** beforeRouteUpdate")
+    //     this.no = to.params.no
+    //     next()  // 반드시 호출해야. 호출하지 않으면 내비게이션이 완료되지 않아 URL 경로가 변경되지 않음
+    // },
+
+
     // 첫번째 호출 이후에는 ContactByNo 컴포넌트가 이미 Contacts.vue 안에 생성되어있으므로 
     // created() 나 mounted() 가 호출되지 않는 문제를 해결하기 위해 watch 사용
     // watch:{
