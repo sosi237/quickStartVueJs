@@ -3,11 +3,21 @@
     <div class="header">
       <h1 class="headerText">(주)OpenSG</h1>
       <nav>
+        <!-- 명명된 라우트 사용 -->
+        <!-- 객체를 바인딩하므로 반드시 v-bind를 사용하여 바인딩해야 함 -->
+        <!-- name 과 함께 params, query 객체를 전달할 수 있음 -->
+        <ul>
+          <li><router-link v-bind:to="{name:'home'}">Home</router-link></li>
+          <li><router-link v-bind:to="{name:'about'}">About</router-link></li>
+          <li><router-link v-bind:to="{name:'contacts'}">Contacts</router-link></li>
+        </ul>
+        <!-- 
         <ul>
           <li><router-link to="/home">Home</router-link></li>
           <li><router-link to="/about">About</router-link></li>
           <li><router-link to="/contacts">Contacts</router-link></li>
-        </ul>
+        </ul> 
+        -->
       </nav>
     </div>
     <div class="container">
@@ -26,13 +36,15 @@ import VueRouter from 'vue-router'  // vue-router 참조
 
 // 각 경로별로 보여줄 컴포넌트를 매핑한 router 객체 생성
 const router = new VueRouter({
+  //명명된 라우트 : 라우트 정보에 고유 이름을 부여 
+  // URI 경로가 아닌 라우트 이름으로 내비게이션하도록 함으로써 URI 경로 변경시 유지보수 용이
   routes:[
     {path:"/", component:Home},
-    {path:"/home", component:Home},
-    {path:"/about", component:About},
-    {path:"/contacts", component:Contacts,
+    {path:"/home", name:"home", component:Home},
+    {path:"/about", name:"about", component:About},
+    {path:"/contacts", name:"contacts", component:Contacts,
       children:[
-        {path:":no", component:ContactByNo},
+        {path:":no", name:"contactbyno", component:ContactByNo},
     ]},
     
   ]
