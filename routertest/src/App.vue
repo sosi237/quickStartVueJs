@@ -44,10 +44,26 @@ const router = new VueRouter({
     {path:"/about", name:"about", component:About},
     {path:"/contacts", name:"contacts", component:Contacts,
       children:[
-        {path:":no", name:"contactbyno", component:ContactByNo},
+        {path:":no", name:"contactbyno", component:ContactByNo, beforeEnter:(to, from, next)=>{
+          console.log("@@ beforeEnter: " + from.path + "--> " + to.path)
+          // /contacts 에서 /contacts/:no로의 이동만 허용하게 하기 위함
+          // http://localhost:8081/#/contacts/1004 처럼 입력하여 이동해보기
+          if(from.path.startsWith("/contacts"))   next()
+          else next("/home")
+        }},
     ]},
     
   ]
+})
+
+// 특히, 애플리케이션의 인증 처리에 사용 가능
+// 사용자 인증 여부를 beforeEach에서 확인하고 인증하지 않았거나 접근 권한이 없을시 로그인화면으로 이동시키도록 next() 활용 가능
+router.beforeEach((to, from, next)=>{
+  console.log("** beforeEach")
+  next()
+})
+router.afterEach((to, from)=>{
+  console.log("** afterEach")
 })
 
 // vue 인스턴스 생성시 router 객체 지정

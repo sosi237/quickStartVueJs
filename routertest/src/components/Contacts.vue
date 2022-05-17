@@ -3,8 +3,11 @@
         <h1>연락처</h1>
         <div class="wrapper">
             <div class="box" v-for="c in contacts" :key="c.no">
+                <!-- 프로그래밍 방식의 라우팅 -->
+                <span @click="navigate(c.no)" style="cursor:pointer">[{{c.name}}]</span>
                 <!-- 명명된 라우트 사용 -->
-                <router-link v-bind:to="{name:'contactbyno', params:{no:c.no}}">{{c.name}}</router-link>
+                <!-- <router-link v-bind:to="{name:'contactbyno', params:{no:c.no}}">{{c.name}}</router-link> -->
+                <!-- 명명된 라우트 미사용 -->
                 <!-- <router-link v-bind:to="'/contacts/' + c.no">{{c.name}}</router-link> -->
             </div>
         </div>
@@ -18,6 +21,16 @@ export default {
     name:"contacts",
     data:function(){
         return {contacts:contactlist.contacts}
+    },
+    methods:{
+        navigate(no){
+            if(confirm("상세 정보를 보시겠습니까?")){
+                // this.$router.push(location [, completeCallback] [, abortCallback])
+                this.$router.push({name:"contactbyno", params:{no:no}}, function(){
+                    console.log("/contacts/"+no+"로 이동 완료")
+                })
+            }
+        }
     }
 }
 </script>
