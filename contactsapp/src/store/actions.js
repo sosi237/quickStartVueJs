@@ -4,6 +4,9 @@ import CONF from '../Config'
 
 // 라우터 사용에 따라 더이상 화면전환엔 상태가 필요하지 않으므로 일부 메소드 삭제
 export default {
+    [Constant.CHANGE_ISLOADING]: (store, payload) => {
+        store.commit(Constant.CHANGE_ISLOADING, payload)
+    },
     [Constant.FETCH_CONTACTS]: (store, payload) => {
         var pageno;
         if (typeof payload === "undefined" || typeof payload.pageno === "undefined")
@@ -11,14 +14,18 @@ export default {
         else
             pageno = payload.pageno;
         var pagesize = store.state.contactlist.pagesize;
+        store.dispatch(Constant.CHANGE_ISLOADING, { isloading: true })
 
         axios.get(CONF.FETCH, {
             params: { pageno: pageno, pagesize: pagesize }
         }).then((response) => {
             store.commit(Constant.FETCH_CONTACTS, { contactlist: response.data });
+            store.dispatch(Constant.CHANGE_ISLOADING, { isloading: false })
         })
     },
     [Constant.ADD_CONTACT]: (store) => {
+        // 어차피 이후 FETCH_CONTACTS 액션을 디스패치하므로 isloading 을 false로 만드는 추가작업 필요 없음
+        store.dispatch(Constant.CHANGE_ISLOADING, { isloading: true })
         axios.post(CONF.ADD, store.state.contact)
             .then((response) => {
                 if (response.data.status == "success") {
@@ -31,6 +38,7 @@ export default {
             })
     },
     [Constant.UPDATE_CONTACT]: (store) => {
+        store.dispatch(Constant.CHANGE_ISLOADING, { isloading: true })
         var currentPageNo = store.state.contactlist.pageno;
         var contact = store.state.contact;
         axios.put(CONF.UPDATE.replace("${no}", contact.no), contact)
@@ -43,6 +51,7 @@ export default {
             })
     },
     [Constant.UPDATE_PHOTO]: (store, payload) => {
+        store.dispatch(Constant.CHANGE_ISLOADING, { isloading: true })
         var currentPageNo = store.state.contactlist.pageno;
         var data = new FormData();
         data.append('photo', payload.file);
@@ -52,6 +61,7 @@ export default {
             })
     },
     [Constant.DELETE_CONTACT]: (store, payload) => {
+        store.dispatch(Constant.CHANGE_ISLOADING, { isloading: true })
         var currentPageNo = store.state.contactlist.pageno;
         axios.delete(CONF.DELETE.replace("${no}", payload.no))
             .then(() => {
@@ -59,9 +69,11 @@ export default {
             })
     },
     [Constant.FETCH_CONTACT_ONE]: (store, payload) => {
+        store.dispatch(Constant.CHANGE_ISLOADING, { isloading: true })
         axios.get(CONF.FETCH_ONE.replace("${no}", payload.no))
             .then((response) => {
                 store.dispatch(Constant.FETCH_CONTACT_ONE, { contact: response.data });
+                store.dispatch(Constant.CHANGE_ISLOADING, { isloading: false })
             })
     },
     [Constant.INITIALIZE_CONTACT_ONE]: (store) => {

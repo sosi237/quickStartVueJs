@@ -13,4 +13,7 @@ export default {
     [Constant.INITIALIZE_CONTACT_ONE]: (state) => {
         state.contact = { no: "", name: "", tel: "", address: "", photo: "", };
     },
+    [Constant.CHANGE_ISLOADING]: (state, payload) => {
+        state.isloading = payload.isloading;
+    },
 }

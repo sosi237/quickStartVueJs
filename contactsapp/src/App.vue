@@ -10,13 +10,17 @@
          </div>
       </div>
       <router-view></router-view>
+      <loading v-show="isloading"></loading>
   </div>
 </template>
 
 <script>
-// 동적 컴포넌트를 이용하지 않으므로 더이상 컴포넌트를 참조할 필요 없음.
+import Loading from './components/Loading'
+import {mapState} from 'vuex'
 export default {    
     name: 'app',
+    components:{Loading},
+    computed:mapState(['isloading'])
 }
 </script>
 
